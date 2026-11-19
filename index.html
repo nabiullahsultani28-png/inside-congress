@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101b22">
+  <title>Inside Congress · Civic Atlas</title>
+  <meta name="description" content="Step inside the U.S. Capitol, compare the House and Senate, and guide a bill to the president in an interactive civics museum.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="museum.css">
+  <script type="module" src="scripts/museum.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main-content">Skip to main content</a>
+  <header class="topbar">
+    <div class="wrap masthead">
+      <a class="wordmark" href="#home" aria-label="Civic Atlas home"><svg class="brand-symbol" aria-hidden="true"><use href="assets/icons.svg#capitol"/></svg><span>Civic Atlas</span></a>
+      <nav id="nav" class="main-nav" aria-label="Museum navigation">
+        <a href="#home" data-nav="home" aria-current="page">Overview</a>
+        <a href="#chambers/house" data-nav="chambers">The chambers</a>
+        <a href="#bill" data-nav="bill">Bill journey</a>
+        <a href="#powers" data-nav="powers">Powers</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="guide-link" href="#guide" data-nav="guide"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#book"/></svg><span>Field guide</span></a>
+        <button class="menu-toggle icon-button" type="button" aria-controls="nav" aria-expanded="false" aria-label="Open menu"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#menu"/></svg></button>
+      </div>
+    </div>
+  </header>
+  <main id="main-content" tabindex="-1">
+    <div id="home-view">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-atmosphere" aria-hidden="true"></div>
+        <div class="wrap hero-layout">
+          <div class="hero-copy">
+            <p class="eyebrow hero-kicker"><span class="short-rule"></span> An interactive civics museum</p>
+            <h1 id="hero-title">Inside <em>Congress.</em></h1>
+            <p class="hero-lede">Step inside the U.S. Capitol to discover who represents you, how a bill becomes law, and where Congress gets its power.</p>
+            <div class="hero-actions">
+              <a class="button copper-button" href="#capitol"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#cube"/></svg>Explore the Capitol</a>
+              <a class="quiet-link" href="#exhibits">Browse exhibits</a>
+            </div>
+          </div>
+          <figure class="hero-model">
+            <div class="draft-plane" aria-hidden="true"></div>
+            <div class="model-render">
+              <a href="#capitol" class="render-link" aria-label="Inspect the three-dimensional Capitol model"><img class="capitol-poster" src="assets/capitol/capitol.webp" alt="Scale model of the Capitol’s west front, with an ivory dome above two columned wings" fetchpriority="high"></a>
+              <a class="model-pin senate-pin" href="#chambers/senate"><span class="pin-point"></span><span>Senate</span></a>
+              <a class="model-pin house-pin" href="#chambers/house"><span class="pin-point"></span><span>House</span></a>
+            </div>
+            <figcaption><span class="model-caption"><span class="caption-line"></span> U.S. Capitol <i> / </i> West front</span><a class="orbit-link" href="#capitol" aria-label="Rotate the Capitol model"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#orbit"/></svg><span>View in 3D</span></a></figcaption>
+          </figure>
+        </div>
+        <div class="fact-band"><div class="wrap facts">
+          <div class="location"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#pin"/></svg><span>Washington, D.C.</span></div>
+          <span class="fact"><b>2</b> chambers</span><span class="fact"><b>435</b> voting House seats</span><span class="fact"><b>100</b> Senate seats</span>
+        </div></div>
+      </section>
+      <section id="exhibits" class="wrap collection" tabindex="-1">
+        <div class="section-head">
+          <div><p class="eyebrow light-kicker"><span class="short-rule"></span> Museum collection</p><h2>Explore the exhibits.</h2></div>
+          <p class="collection-note">Three ways to explore the<br>legislative branch.</p>
+        </div>
+        <div class="exhibit-grid">
+          <a class="exhibit-card" href="#chambers/house"><div class="card-image"><img src="assets/photos/house.webp" alt="Tiered seating in the House chamber" loading="lazy"><span class="format-tag"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#people"/></svg> Chamber explorer</span></div><div class="card-copy"><p class="eyebrow">Representation</p><h3>The two chambers</h3><p>See how a district and a state each get a voice in Congress.</p></div></a>
+          <a class="exhibit-card" href="#bill"><div class="card-image"><img src="assets/photos/bill.webp" alt="Detail of the handwritten 1872 act establishing Yellowstone National Park" loading="lazy"><span class="format-tag"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#file"/></svg> Guided simulation</span></div><div class="card-copy"><p class="eyebrow">Lawmaking</p><h3>The life of a bill</h3><p>Follow a library repair bill and decide what happens when the chambers disagree.</p></div></a>
+          <a class="exhibit-card" href="#powers"><div class="card-image"><img src="assets/photos/powers.webp" alt="A moment at the Senate Watergate hearings in 1973" loading="lazy"><span class="format-tag"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#scales"/></svg> Illustrated guide</span></div><div class="card-copy"><p class="eyebrow">Constitutional powers</p><h3>Beyond lawmaking</h3><p>Explore the power to fund agencies, investigate their work, and confirm nominees.</p></div></a>
+        </div>
+        <p class="gallery-credits">Collection photography courtesy of the U.S. House, National Archives, and U.S. Senate. <a href="#guide/credits">Image credits</a></p>
+      </section>
+      <aside class="wrap field-promo"><div class="folio-mark" aria-hidden="true"><svg><use href="assets/icons.svg#book"/></svg></div><div><p class="eyebrow">In the field</p><h2>Follow Congress today.</h2><p>Find your representatives, look up a bill, or open the official sources behind the exhibits.</p></div><a class="button light-button" href="#guide">Open field guide</a></aside>
+    </div>
+    <div id="exhibit-view" hidden></div>
+    <noscript><section class="wrap no-script"><h2>Congress at a glance</h2><p>The House represents districts and elects its members every two years. Each state has two senators, elected for six years. A bill must pass both chambers in identical form before it goes to the president.</p><p>Enable JavaScript to use the model and animated exhibits, or read <a href="https://www.house.gov/the-house-explained/the-legislative-process">the House guide to lawmaking</a>.</p></section></noscript>
+  </main>
+  <footer class="site-footer"><div class="wrap footer-inner"><a class="wordmark" href="#home"><svg class="brand-symbol" aria-hidden="true"><use href="assets/icons.svg#capitol"/></svg>Civic Atlas</a><p>An independent civics museum.</p><a href="#guide/credits">Sources &amp; credits</a></div></footer>
+</body>
+</html>
