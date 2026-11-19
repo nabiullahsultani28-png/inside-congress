@@ -1,3 +1,4 @@
+import {installStudy} from './drawing-study.js';
 import { ACESFilmicToneMapping, AmbientLight, DirectionalLight, GLTFLoader, HemisphereLight, OrbitControls, OrthographicCamera, PCFSoftShadowMap, Raycaster, Scene, Spherical, Vector2, Vector3, WebGLRenderer } from '../assets/vendor/three-museum.js';
 
 const cameraStart = new Vector3(14.02321, 14.96939, 32.61212);
@@ -101,6 +102,7 @@ export async function showCapitol(viewer, signal) {
       if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
     });
     scene.add(model);
+    installStudy(viewer,model,draw,signal);
     controls.addEventListener('change', draw);
     resize();
     viewer.classList.add('has-model');

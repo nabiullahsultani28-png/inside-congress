@@ -1,3 +1,4 @@
+import {screeningMarkup, createScreening} from './bill-screening.js';
 import {intro, page, photo, related, sources} from './exhibit-kit.js';
 
 const stages = [
@@ -107,16 +108,20 @@ function journal(index,state) {
 
 export function billContent() {
   const content=intro('Lawmaking','The life of a bill.','Follow a fictional plan to repair public libraries. Step through the votes, compare two versions of the bill, and explore the choices that decide its fate.') +
-    '<nav aria-label="Bill journey steps"><ol class="bill-steps">' + stages.map((s,i)=>'<li><button type="button" data-step="' + i + '"><span>' + (i+1) + '</span>' + s.short + '</button></li>').join('') +
+    screeningMarkup() + '<nav aria-label="Bill journey steps"><ol class="bill-steps">' + stages.map((s,i)=>'<li><button type="button" data-step="' + i + '"><span>' + (i+1) + '</span>' + s.short + '</button></li>').join('') +
     '</ol></nav><div class="panel bill-stage"></div><p class="sr-only" aria-live="polite" id="bill-announcement"></p>' +
     '<section class="panel context-card">' + photo('bill') + '<div><p class="eyebrow detail-eyebrow">From the archives</p><h2>A bill that became a park.</h2><p>On March 1, 1872, President Ulysses S. Grant signed the act establishing Yellowstone National Park. This handwritten enrolled act is the final version passed by both chambers.</p><p class="source-note">Read the <a href="' + sources.process + '">House legislative guide</a>, <a href="' + sources.differences + '">how chambers resolve differences</a>, and <a href="' + sources.president + '">presidential action</a>.</p></div></section>' + related('What can Congress do beyond passing bills?','Explore its powers','#powers');
   return page('The life of a bill',content);
 }
 
-export function wireBill(root) {
+export function wireBill(root, signal) {
   const state={step:0,agreement:'',response:'',outcome:''};
   const panel=root.querySelector('.bill-stage'), announce=root.querySelector('#bill-announcement');
+  const screening=createScreening(root,signal,()=>{
+    if(state.step<4){state.step++;render();announce.textContent=stages[state.step].title;}
+  });
   function render(focus='') {
+    screening.show(state.step);
     root.querySelectorAll('[data-step]').forEach(button => {
       const i=Number(button.dataset.step);
       if (i===state.step) button.setAttribute('aria-current','step'); else button.removeAttribute('aria-current');

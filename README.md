@@ -8,7 +8,11 @@ Serve the repository root with any static HTTP server. With Python installed, ru
 
 ## GitHub Pages
 
-In **Settings → Pages**, choose **Deploy from a branch**, then **main** and **/ (root)**. GitHub Pages serves the checked-in HTML, CSS, JavaScript, and assets directly. Relative asset URLs and hash-based exhibit links work under a repository subpath.
+The live site is published from the root of the **gh-pages** branch. Keep that branch in sync with the release on **main**. All runtime assets use relative paths.
+
+## Build the TypeScript interactions
+
+Run `npm ci`, then `npm run build`. The editable TypeScript is in `src/`. Compiled browser modules live in `scripts/` and are checked in so Pages can serve them directly. Run `npm run check` to type-check without emitting files. The guided camera tour renders the Capitol with Three.js, with three matching stills for the WebGL fallback. In the free-orbit viewer, **Line drawing** traces the model’s cornices and columns using instanced feature edges. Run `npm run vendor` after updating Three.js to regenerate the local bundle. The bill walkthrough and chamber seat transitions use the same reduced-motion preference as the camera tour.
 
 ## Source and assets
 

@@ -1,3 +1,4 @@
+import {readSeats,animateSeats} from './seat-transition.js';
 import {icon, intro, page, related, sources} from './exhibit-kit.js';
 import {chamberContent, wireChamber} from './chambers.js';
 import {billContent, wireBill} from './bill.js';
@@ -32,7 +33,7 @@ function viewerContent() {
   const commands=[['left','left','Rotate left'],['right','right','Rotate right'],['out','minus','Zoom out'],['in','plus','Zoom in'],['reset','reset','Reset view']];
   const buttons=commands.map(([action,symbol,label])=>'<button type="button" disabled class="ghost-button" data-camera="' + action + '" aria-label="' + label + '" title="' + label + '">' + icon(symbol) + '</button>').join('');
   return page('The Capitol',intro('Architecture','The U.S. Capitol.','The Senate meets in the north wing and the House in the south. Explore the scale model from any angle, or choose a chamber below.') +
-    '<div class="viewer"><div class="viewer-stage" tabindex="0" role="group" aria-label="Interactive Capitol model" aria-describedby="viewer-keys"><img class="viewer-photo" src="assets/capitol/capitol.webp" alt="Scale model of the west front of the U.S. Capitol"><canvas class="viewer-canvas" aria-label="Rotatable 3D Capitol"></canvas></div><div class="viewer-bar"><p class="viewer-status" role="status">Opening the 3D model…</p><div class="viewer-controls" role="group" aria-label="Camera controls">' + buttons + '</div></div></div>' +
+    '<div class="viewer"><div class="viewer-stage" tabindex="0" role="group" aria-label="Interactive Capitol model" aria-describedby="viewer-keys"><img class="viewer-photo" src="assets/capitol/capitol.webp" alt="Scale model of the west front of the U.S. Capitol"><canvas class="viewer-canvas" aria-label="Rotatable 3D Capitol"></canvas></div><div class="viewer-bar"><p class="viewer-status" role="status">Opening the 3D model…</p><div class="viewer-controls" role="group" aria-label="Model and camera controls"><button type="button" class="ghost-button drawing-button" data-drawing aria-pressed="false" disabled>Line drawing</button>' + buttons + '</div></div></div>' +
     '<p id="viewer-keys" class="sr-only">Use left and right arrow keys to rotate, up and down to zoom, and Home to reset the camera.</p>' +
     '<section class="viewer-layout"><div class="viewer-text"><h2>One building, two chambers.</h2><p>The Rotunda sits beneath the central dome. Facing the west front, you see the Senate wing on your left and the House wing on your right.</p></div><nav class="model-wing-links" aria-label="Visit a chamber"><a class="button light-button" href="#chambers/senate">Visit the Senate</a><a class="button primary-button" href="#chambers/house">Visit the House</a></nav></section>' +
     '<p class="source-note exhibit-footnote">Architecture reference · <a href="' + sources.capitol + '">Architect of the Capitol</a></p>' +
@@ -59,6 +60,10 @@ function route(initial=false) {
   document.title=titles[view]+' · Civic Atlas';
   if (view==='home') {
     exhibit.replaceChildren();
+    const tourSignal=lifecycle.signal;
+    import('./camera-tour.js').then(({startTour})=>{
+      if (!tourSignal.aborted) startTour(home.querySelector('.theater'),tourSignal);
+    });
     if (collection) {
       const gallery=document.getElementById('exhibits');
       gallery.focus({preventScroll:true});
@@ -71,9 +76,11 @@ function route(initial=false) {
   }
   if (view==='chambers') {
     const key = detail==='senate' ? 'senate' : 'house';
+    const oldSeats=previous==='chambers'?readSeats(exhibit):[];
     exhibit.innerHTML=chamberContent(key); wireChamber(exhibit,key);
+    animateSeats(exhibit,oldSeats);
   } else if (view==='bill') {
-    exhibit.innerHTML=billContent(); wireBill(exhibit);
+    exhibit.innerHTML=billContent(); wireBill(exhibit,lifecycle.signal);
   } else if (view==='powers') {
     const key=['spending','oversight','confirmations'].includes(detail) ? detail : 'spending';
     exhibit.innerHTML=powersContent(key);

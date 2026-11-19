@@ -1,0 +1,17 @@
+{
+  "name": "inside-congress",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "vendor": "esbuild tools/three-entry.js --bundle --minify --format=esm --legal-comments=eof --outfile=assets/vendor/three-museum.js"
+  },
+  "devDependencies": {
+    "@types/three": "0.173.0",
+    "esbuild": "0.25.11",
+    "three": "0.173.0",
+    "typescript": "5.8.3"
+  }
+}

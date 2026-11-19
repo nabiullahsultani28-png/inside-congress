@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#101b22">
+  <meta name="theme-color" content="#25151c">
   <title>Inside Congress · Civic Atlas</title>
   <meta name="description" content="Step inside the U.S. Capitol, compare the House and Senate, and guide a bill to the president in an interactive civics museum.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -31,37 +31,35 @@
   </header>
   <main id="main-content" tabindex="-1">
     <div id="home-view">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-atmosphere" aria-hidden="true"></div>
-        <div class="wrap hero-layout">
-          <div class="hero-copy">
-            <p class="eyebrow hero-kicker"><span class="short-rule"></span> An interactive civics museum</p>
-            <h1 id="hero-title">Inside <em>Congress.</em></h1>
-            <p class="hero-lede">Step inside the U.S. Capitol to discover who represents you, how a bill becomes law, and where Congress gets its power.</p>
-            <div class="hero-actions">
-              <a class="button copper-button" href="#capitol"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#cube"/></svg>Explore the Capitol</a>
-              <a class="quiet-link" href="#exhibits">Browse exhibits</a>
-            </div>
+      <section class="cover" aria-labelledby="hero-title">
+        <div class="horizon" aria-hidden="true"></div>
+        <div class="wrap cover-grid">
+          <div class="cover-story">
+            <p class="imprint"><span class="imprint-star" aria-hidden="true">✦</span> Inside Congress <span class="imprint-rule"></span> A civic exhibition</p>
+            <h1 id="hero-title"><span>Congress,</span><em>in motion.</em></h1>
+            <p class="cover-intro">Walk the halls of American lawmaking. Explore the two chambers, then follow an idea all the way to the president’s desk.</p>
+            <div class="cover-links"><a class="entry-button" href="#capitol"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#cube"/></svg>Enter the Capitol</a><a class="text-entry" href="#bill">Follow a bill</a></div>
           </div>
-          <figure class="hero-model">
-            <div class="draft-plane" aria-hidden="true"></div>
-            <div class="model-render">
-              <a href="#capitol" class="render-link" aria-label="Inspect the three-dimensional Capitol model"><img class="capitol-poster" src="assets/capitol/capitol.webp" alt="Scale model of the Capitol’s west front, with an ivory dome above two columned wings" fetchpriority="high"></a>
-              <a class="model-pin senate-pin" href="#chambers/senate"><span class="pin-point"></span><span>Senate</span></a>
-              <a class="model-pin house-pin" href="#chambers/house"><span class="pin-point"></span><span>House</span></a>
+          <figure class="theater" aria-label="Guided architectural tour of the Capitol">
+            <div class="tour-frame">
+              <div class="atlas-rings" aria-hidden="true"></div>
+              <div class="tour-optics" aria-hidden="true"></div>
+              <div class="tour-layers" aria-hidden="true"><img src="assets/capitol/west.webp" alt="" fetchpriority="high" data-still="0" class="current"><img data-src="assets/capitol/north.webp" alt="" data-still="1"><img data-src="assets/capitol/south.webp" alt="" data-still="2"></div>
+              <canvas class="tour-screen" aria-hidden="true"></canvas>
             </div>
-            <figcaption><span class="model-caption"><span class="caption-line"></span> U.S. Capitol <i> / </i> West front</span><a class="orbit-link" href="#capitol" aria-label="Rotate the Capitol model"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#orbit"/></svg><span>View in 3D</span></a></figcaption>
+            <figcaption class="tour-console">
+              <div class="tour-meta"><span class="tour-tick" aria-hidden="true"></span> Capitol camera tour <span data-counter>01 / 03</span></div>
+              <div class="tour-caption"><div><a class="tour-title" href="#capitol">The west front</a><p class="tour-detail">Two chambers meet on either side of the Rotunda.</p></div><button class="transport" type="button" aria-label="Pause camera tour" title="Pause camera tour" data-tour-toggle><span aria-hidden="true">Ⅱ</span></button></div>
+              <div class="tour-index" aria-label="Choose a camera view" role="group"><button type="button" data-stop="0" aria-pressed="true">West front</button><button type="button" data-stop="1" aria-pressed="false">Senate wing</button><button type="button" data-stop="2" aria-pressed="false">House wing</button></div>
+            </figcaption>
           </figure>
         </div>
-        <div class="fact-band"><div class="wrap facts">
-          <div class="location"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#pin"/></svg><span>Washington, D.C.</span></div>
-          <span class="fact"><b>2</b> chambers</span><span class="fact"><b>435</b> voting House seats</span><span class="fact"><b>100</b> Senate seats</span>
-        </div></div>
+        <div class="atlas-ledger"><div class="wrap ledger-inner"><span class="ledger-place"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#pin"/></svg> Washington, D.C.</span><a href="#chambers/house"><b>435</b> voting House seats</a><span class="ledger-star" aria-hidden="true">✧</span><a href="#chambers/senate"><b>100</b> Senate seats</a><a href="#exhibits" class="ledger-browse"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#grid"/></svg> Browse exhibits</a></div></div>
       </section>
       <section id="exhibits" class="wrap collection" tabindex="-1">
         <div class="section-head">
-          <div><p class="eyebrow light-kicker"><span class="short-rule"></span> Museum collection</p><h2>Explore the exhibits.</h2></div>
-          <p class="collection-note">Three ways to explore the<br>legislative branch.</p>
+          <div><p class="eyebrow light-kicker"><span class="short-rule"></span> Permanent collection</p><h2>Inside the institution.</h2></div>
+
         </div>
         <div class="exhibit-grid">
           <a class="exhibit-card" href="#chambers/house"><div class="card-image"><img src="assets/photos/house.webp" alt="Tiered seating in the House chamber" loading="lazy"><span class="format-tag"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#people"/></svg> Chamber explorer</span></div><div class="card-copy"><p class="eyebrow">Representation</p><h3>The two chambers</h3><p>See how a district and a state each get a voice in Congress.</p></div></a>
