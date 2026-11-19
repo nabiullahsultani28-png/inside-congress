@@ -1,3 +1,4 @@
+import {showPlates} from './plate-viewer.js';
 import {readSeats,animateSeats} from './seat-transition.js';
 import {icon, intro, page, related, sources} from './exhibit-kit.js';
 import {chamberContent, wireChamber} from './chambers.js';
@@ -93,9 +94,7 @@ function route(initial=false) {
       if (!signal.aborted) return showCapitol(viewer, signal);
     }).catch(() => {
       if (!signal.aborted) {
-        viewer.querySelector('.viewer-status').textContent='Still view. Explore the House and Senate using the links below.';
-        viewer.querySelector('.viewer-controls').hidden=true;
-        viewer.querySelector('.viewer-stage').removeAttribute('tabindex');
+        showPlates(viewer,signal);
       }
     });
   }

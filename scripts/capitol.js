@@ -1,3 +1,4 @@
+import {showPlates} from './plate-viewer.js';
 import {installStudy} from './drawing-study.js';
 import { ACESFilmicToneMapping, AmbientLight, DirectionalLight, GLTFLoader, HemisphereLight, OrbitControls, OrthographicCamera, PCFSoftShadowMap, Raycaster, Scene, Spherical, Vector2, Vector3, WebGLRenderer } from '../assets/vendor/three-museum.js';
 
@@ -35,12 +36,12 @@ export async function showCapitol(viewer, signal) {
     renderer?.forceContextLoss();
   }
   signal.addEventListener('abort', release, {once:true});
+  const interactions=new AbortController();
+  signal.addEventListener('abort',()=>interactions.abort(),{once:true});
   function showStill() {
-    viewer.classList.remove('has-model');
-    viewer.querySelector('.viewer-controls').hidden = true;
-    status.textContent = 'Still view. Explore the House and Senate using the links below.';
-    canvas.hidden = true;
-    stage.removeAttribute('tabindex');
+    interactions.abort();
+    release();
+    showPlates(viewer,signal);
   }
   try {
     if (signal.aborted) return;
@@ -102,13 +103,14 @@ export async function showCapitol(viewer, signal) {
       if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
     });
     scene.add(model);
-    installStudy(viewer,model,draw,signal);
+    installStudy(viewer,model,draw,interactions.signal);
     controls.addEventListener('change', draw);
     resize();
     viewer.classList.add('has-model');
     status.textContent = 'Drag to rotate. Select a wing to visit its chamber.';
     buttons.forEach(button => {button.disabled = false;});
     function operate(action) {
+      if(disposed) return;
       if (action === 'reset') controls.reset();
       else if (action === 'in' || action === 'out') {
         camera.zoom = Math.min(controls.maxZoom, Math.max(controls.minZoom, camera.zoom * (action === 'in' ? 1.23 : 1 / 1.23)));

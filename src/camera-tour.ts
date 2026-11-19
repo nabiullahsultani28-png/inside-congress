@@ -77,7 +77,7 @@ export function startTour(root: HTMLElement, signal: AbortSignal): void {
     const label = playing ? "Pause camera tour" : "Play camera tour";
     toggle.setAttribute("aria-label", label);
     toggle.title = label;
-    toggle.firstElementChild!.textContent = playing ? "Ⅱ" : "▶";
+    toggle.dataset.playing = String(playing);
     root.style.setProperty(
       "--tour-progress",
       playing ? String(time / hold) : "1",
@@ -175,11 +175,14 @@ export function startTour(root: HTMLElement, signal: AbortSignal): void {
     { signal },
   );
   document.addEventListener("visibilitychange", wake, { signal });
-  const observer = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
-    if (visible) loadLens();
-    wake();
-  });
+  const observer =
+    typeof IntersectionObserver === "undefined"
+      ? null
+      : new IntersectionObserver(([entry]) => {
+          visible = entry.isIntersecting;
+          if (visible) loadLens();
+          wake();
+        });
   frame.querySelector("canvas")!.addEventListener(
     "webglcontextlost",
     () => {
