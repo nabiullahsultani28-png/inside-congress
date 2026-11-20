@@ -21,9 +21,9 @@ export function animateSeats(root, old) {
             {
                 transform: "translate(" + dx + "px," + dy + "px) scale(.65)",
                 opacity: 0.45,
-                fill: "#f1cf9d",
+                fill: "#b1c7cc",
             },
-            { transform: "translate(0,0) scale(1)", opacity: 1, fill: "#e0b28f" },
+            { transform: "translate(0,0) scale(1)", opacity: 1, fill: "#e3e8d9" },
         ], {
             duration: 740,
             delay: (120 * i) / dots.length,

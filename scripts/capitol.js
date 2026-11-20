@@ -1,73 +1,38 @@
-import {showPlates} from './plate-viewer.js';
-import {installStudy} from './drawing-study.js';
-import { ACESFilmicToneMapping, AmbientLight, DirectionalLight, GLTFLoader, HemisphereLight, OrbitControls, OrthographicCamera, PCFSoftShadowMap, Raycaster, Scene, Spherical, Vector2, Vector3, WebGLRenderer } from '../assets/vendor/three-museum.js';
-
-const cameraStart = new Vector3(14.02321, 14.96939, 32.61212);
-const lookAt = new Vector3(0.10877, 3.64368, 0.25294);
-const modelUrl = new URL('../assets/capitol/capitol.glb', import.meta.url);
-
-export async function showCapitol(viewer, signal) {
-  const stage = viewer.querySelector('.viewer-stage');
-  const status = viewer.querySelector('.viewer-status');
-  const canvas = viewer.querySelector('canvas');
-  const buttons = [...viewer.querySelectorAll('[data-camera]')];
-  const scene = new Scene();
-  const camera = new OrthographicCamera(-16, 16, 8, -8, .1, 150);
-  let renderer, controls, sizing, model;
-  let disposed = false;
-  function disposeObject(object) {
-    const geometries = new Set();
-    const materials = new Set();
-    object?.traverse(node => {
-      if (node.geometry) geometries.add(node.geometry);
-      if (node.material) for (const material of [node.material].flat()) materials.add(material);
-    });
-    geometries.forEach(geometry => geometry.dispose());
-    materials.forEach(material => material.dispose());
-  }
-  function release() {
-    if (disposed) return;
-    disposed = true;
-    sizing?.disconnect();
-    controls?.dispose();
-    disposeObject(model);
-    for (const light of scene.children) light.shadow?.dispose();
-    renderer?.dispose();
-    renderer?.forceContextLoss();
-  }
-  signal.addEventListener('abort', release, {once:true});
-  const interactions=new AbortController();
-  signal.addEventListener('abort',()=>interactions.abort(),{once:true});
-  function showStill() {
-    interactions.abort();
-    release();
-    showPlates(viewer,signal);
-  }
-  try {
-    if (signal.aborted) return;
-    renderer = new WebGLRenderer({canvas, alpha:true, antialias:true, powerPreference:'low-power'});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-    renderer.setClearColor(0x000000, 0);
+import { showPlates } from "./plate-viewer.js";
+import { installStudy } from "./drawing-study.js";
+import { disposeMeshes } from "./plate-scene.js";
+import { ACESFilmicToneMapping, DirectionalLight, GLTFLoader, HemisphereLight, OrbitControls, OrthographicCamera, PCFSoftShadowMap, Raycaster, Scene, Spherical, Vector2, Vector3, WebGLRenderer, } from "../assets/vendor/three-museum.js";
+const modelUrl = new URL("../assets/capitol/capitol.glb?v=2", import.meta.url);
+const keys = {
+    ArrowLeft: "left", ArrowRight: "right", ArrowUp: "in", ArrowDown: "out", Home: "reset", "+": "in", "-": "out",
+};
+export async function showCapitol(viewer, context, signal) {
+    const stage = viewer.querySelector(".viewer-stage");
+    const status = viewer.querySelector(".viewer-status");
+    const canvas = viewer.querySelector("canvas");
+    const buttons = [...viewer.querySelectorAll("[data-camera]")];
+    const scene = new Scene();
+    const camera = new OrthographicCamera(-16, 16, 8, -8, .1, 150);
+    const renderer = new WebGLRenderer({ canvas, context, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
+    renderer.setClearColor(0, 0);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFSoftShadowMap;
     renderer.toneMapping = ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.06;
-    scene.add(new HemisphereLight(0xffefdd, 0xa4b7bf, 1.55), new AmbientLight(0xffefe3, .35));
-    const key = new DirectionalLight(0xffe0be, 2.95);
+    scene.add(new HemisphereLight(0xfff1e0, 0xa6b8bc, 1.85));
+    const key = new DirectionalLight(0xffebd5, 3.1);
     key.position.set(-14, 22, 16);
     key.castShadow = true;
-    key.shadow.mapSize.set(1536, 1536);
-    Object.assign(key.shadow.camera, {left:-18,right:18,top:14,bottom:-14,near:.5,far:70});
+    key.shadow.mapSize.set(1024, 1024);
+    Object.assign(key.shadow.camera, { left: -18, right: 18, top: 14, bottom: -14, near: .5, far: 70 });
     key.shadow.normalBias = .026;
     key.shadow.bias = -.0003;
-    const fill = new DirectionalLight(0xc8e2ff, 1.2);
-    fill.position.set(17, 9, 8);
     const rim = new DirectionalLight(0xcde7fa, 1.6);
     rim.position.set(5, 14, -13);
-    scene.add(key, fill, rim);
-    camera.position.copy(cameraStart);
-    controls = new OrbitControls(camera, canvas);
-    controls.target.copy(lookAt);
+    scene.add(key, rim);
+    camera.position.set(14.023, 14.969, 32.612);
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(.109, 3.644, .253);
     controls.enablePan = false;
     controls.minPolarAngle = .12;
     controls.maxPolarAngle = Math.PI / 2.06;
@@ -77,81 +42,134 @@ export async function showCapitol(viewer, signal) {
     controls.rotateSpeed = .72;
     controls.update();
     controls.saveState();
-    function draw() { if (!disposed && model) renderer.render(scene, camera); }
+    let model;
+    let disposed = false;
+    const listeners = new AbortController();
+    function draw() {
+        if (!disposed && model)
+            renderer.render(scene, camera);
+    }
     function resize() {
-      const width = stage.clientWidth, height = stage.clientHeight;
-      if (!width || !height || disposed) return;
-      const aspect = width / height;
-      const fullWidth = Math.max(30.713381, 14.56966 * aspect) * 1.025;
-      camera.left = -fullWidth / 2;
-      camera.right = fullWidth / 2;
-      camera.top = fullWidth / aspect / 2;
-      camera.bottom = -camera.top;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
-      draw();
-    }
-    sizing = new ResizeObserver(resize);
-    sizing.observe(stage);
-    resize();
-    const file = await fetch(modelUrl, {signal});
-    if (!file.ok) throw new Error('Could not fetch model');
-    const gltf = await new GLTFLoader().parseAsync(await file.arrayBuffer(), modelUrl.href);
-    if (signal.aborted) { disposeObject(gltf.scene); return; }
-    model = gltf.scene;
-    model.traverse(node => {
-      if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
-    });
-    scene.add(model);
-    installStudy(viewer,model,draw,interactions.signal);
-    controls.addEventListener('change', draw);
-    resize();
-    viewer.classList.add('has-model');
-    status.textContent = 'Drag to rotate. Select a wing to visit its chamber.';
-    buttons.forEach(button => {button.disabled = false;});
-    function operate(action) {
-      if(disposed) return;
-      if (action === 'reset') controls.reset();
-      else if (action === 'in' || action === 'out') {
-        camera.zoom = Math.min(controls.maxZoom, Math.max(controls.minZoom, camera.zoom * (action === 'in' ? 1.23 : 1 / 1.23)));
+        const { clientWidth: width, clientHeight: height } = stage;
+        if (!width || !height || disposed)
+            return;
+        const aspect = width / height;
+        const fullWidth = Math.max(30.714, 14.57 * aspect) * 1.025;
+        camera.left = -fullWidth / 2;
+        camera.right = fullWidth / 2;
+        camera.top = fullWidth / aspect / 2;
+        camera.bottom = -camera.top;
         camera.updateProjectionMatrix();
-      } else {
-        const offset = camera.position.clone().sub(controls.target);
-        const spherical = new Spherical().setFromVector3(offset);
-        spherical.theta += action === 'left' ? -.25 : .25;
-        camera.position.copy(controls.target).add(new Vector3().setFromSpherical(spherical));
-      }
-      controls.update();
-      draw();
+        renderer.setSize(width, height, false);
+        draw();
     }
-    buttons.forEach(button => button.addEventListener('click', () => operate(button.dataset.camera), {signal}));
-    const keys = {ArrowLeft:'left',ArrowRight:'right',ArrowUp:'in',ArrowDown:'out',Home:'reset','+':'in','-':'out'};
-    stage.addEventListener('keydown', event => {
-      if (keys[event.key]) { event.preventDefault(); operate(keys[event.key]); }
-    }, {signal});
-    const raycaster = new Raycaster();
-    const pointers = new Set();
-    let down = null;
-    canvas.addEventListener('pointerdown', event => {
-      pointers.add(event.pointerId);
-      down = pointers.size === 1 && event.button === 0 ? {id:event.pointerId, x:event.clientX, y:event.clientY} : null;
-    }, {signal});
-    canvas.addEventListener('pointermove', event => {
-      if (down && Math.hypot(event.clientX - down.x, event.clientY - down.y) > 5) down = null;
-    }, {signal});
-    canvas.addEventListener('pointercancel', event => {pointers.delete(event.pointerId); down = null;}, {signal});
-    canvas.addEventListener('pointerup', event => {
-      pointers.delete(event.pointerId);
-      const tap = down?.id === event.pointerId;
-      down = null;
-      if (!tap) return;
-      const box = canvas.getBoundingClientRect();
-      raycaster.setFromCamera(new Vector2((event.clientX-box.left)/box.width*2-1,1-(event.clientY-box.top)/box.height*2),camera);
-      const hit = raycaster.intersectObject(model,true)[0];
-      if (hit && Math.abs(hit.point.x)>5 && hit.point.y>1.3) location.hash = hit.point.x<0 ? 'chambers/senate' : 'chambers/house';
-    }, {signal});
-    canvas.addEventListener('webglcontextlost', event => { if (!signal.aborted) {event.preventDefault(); showStill();} }, {signal});
-  } catch {
-    if (!signal.aborted) { showStill(); release(); }
-  }
+    const sizing = new ResizeObserver(resize);
+    sizing.observe(stage);
+    function close() {
+        if (disposed)
+            return;
+        disposed = true;
+        listeners.abort();
+        sizing.disconnect();
+        controls.dispose();
+        if (model)
+            disposeMeshes(model);
+        key.shadow.dispose();
+        renderer.dispose();
+        if (!context.isContextLost())
+            renderer.forceContextLoss();
+    }
+    function usePlates() {
+        close();
+        if (!signal.aborted)
+            showPlates(viewer, signal);
+    }
+    signal.addEventListener("abort", close, { once: true });
+    canvas.addEventListener("webglcontextlost", (event) => {
+        event.preventDefault();
+        usePlates();
+    }, { signal: listeners.signal, once: true });
+    try {
+        const response = await fetch(modelUrl, { signal });
+        if (!response.ok)
+            throw new Error("The Capitol model could not be loaded.");
+        const { scene: building } = await new GLTFLoader().parseAsync(await response.arrayBuffer(), modelUrl.href);
+        if (disposed) {
+            disposeMeshes(building);
+            return;
+        }
+        model = building;
+        building.traverse((node) => {
+            const mesh = node;
+            if (mesh.isMesh) {
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+            }
+        });
+        scene.add(building);
+        installStudy(viewer, building, draw, listeners.signal);
+        controls.addEventListener("change", draw);
+        resize();
+        viewer.classList.add("has-model");
+        status.textContent = "Drag to rotate. Select a wing to visit its chamber.";
+        buttons.forEach((button) => { button.disabled = false; });
+        function operate(action) {
+            if (action === "reset")
+                controls.reset();
+            else if (action === "in" || action === "out") {
+                camera.zoom = Math.min(controls.maxZoom, Math.max(controls.minZoom, camera.zoom * (action === "in" ? 1.23 : 1 / 1.23)));
+                camera.updateProjectionMatrix();
+            }
+            else {
+                const offset = camera.position.clone().sub(controls.target);
+                const spherical = new Spherical().setFromVector3(offset);
+                spherical.theta += action === "left" ? -.25 : .25;
+                camera.position.copy(controls.target).add(new Vector3().setFromSpherical(spherical));
+            }
+            controls.update();
+            draw();
+        }
+        const events = { signal: listeners.signal };
+        for (const button of buttons)
+            button.addEventListener("click", () => operate(button.dataset.camera), events);
+        stage.addEventListener("keydown", (event) => {
+            if (keys[event.key]) {
+                event.preventDefault();
+                operate(keys[event.key]);
+            }
+        }, events);
+        const raycaster = new Raycaster();
+        const pointer = new Vector2();
+        let tap;
+        canvas.addEventListener("pointerdown", (event) => {
+            tap = event.isPrimary && event.button === 0 ? { id: event.pointerId, x: event.clientX, y: event.clientY } : undefined;
+        }, events);
+        canvas.addEventListener("pointermove", (event) => {
+            if (tap && Math.hypot(event.clientX - tap.x, event.clientY - tap.y) > 5)
+                tap = undefined;
+        }, events);
+        canvas.addEventListener("pointercancel", () => { tap = undefined; }, events);
+        canvas.addEventListener("pointerup", (event) => {
+            if (tap?.id !== event.pointerId)
+                return;
+            tap = undefined;
+            const box = canvas.getBoundingClientRect();
+            pointer.set((event.clientX - box.left) / box.width * 2 - 1, 1 - (event.clientY - box.top) / box.height * 2);
+            raycaster.setFromCamera(pointer, camera);
+            const hit = raycaster.intersectObject(building, true)[0];
+            for (let node = hit?.object; node; node = node.parent ?? undefined) {
+                if (node.name === "Capitol-North") {
+                    location.hash = "chambers/senate";
+                    break;
+                }
+                if (node.name === "Capitol-South") {
+                    location.hash = "chambers/house";
+                    break;
+                }
+            }
+        }, events);
+    }
+    catch {
+        usePlates();
+    }
 }
